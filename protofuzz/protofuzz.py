@@ -28,6 +28,7 @@ Usage:
 # FIXME: Package containing module 'google' is not listed in project requirements
 from google.protobuf import descriptor as D
 from google.protobuf import message
+from google.protobuf import pyext
 from google.protobuf.internal import containers
 
 from protofuzz import pbimport, gen, values
@@ -140,6 +141,11 @@ def _assign_to_field(obj, name, val):
     if isinstance(target, containers.RepeatedScalarFieldContainer):
         target.append(val)
     elif isinstance(target, containers.RepeatedCompositeFieldContainer):
+        target = target.add()
+        target.CopyFrom(val)
+    elif isinstance(target, pyext._message.RepeatedScalarContainer):
+        target.append(val)
+    elif isinstance(target, pyext._message.RepeatedCompositeContainer):
         target = target.add()
         target.CopyFrom(val)
     elif isinstance(target, (int, float, bool, str, bytes)):
